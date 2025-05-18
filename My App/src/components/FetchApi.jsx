@@ -3,15 +3,30 @@ import { React, useState, useEffect } from "react";
 export default function FetchAllBlogPosts() {
   const { error, setError } = useState(null);
   const { blogPost, setBlogPost } = useState(null);
+  const { isloading, setIsLoading } = useState(false);
 
   useEffect(() => {
-    // Grabbing data from Api
-    fetch("https://jsonplaceholder.typicode.com/posts")
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      //   Checking if any errors occur when grabbing data
-      .catch((error) => setError("Data fetching failed", error));
+    async function loadBlogs() {
+      try {
+        setIsLoading(true);
+        // Fetching blog posts dat
+        const data = await fetch("https://jsonplaceholder.typicode.com/posts");
+        const json = await data.json();
+
+        setBlogPost(json);
+        console.log(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadBlogs();
   }, []);
+
+  if (isloading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
